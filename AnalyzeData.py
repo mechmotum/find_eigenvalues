@@ -35,8 +35,10 @@ def main():
             if show_plots:
                 print(popt)
                 fig, ax = plt.subplots(1,1)
-                ax.plot(df_gyro.index, df_gyro.loc[:,"gyro_x"], '.')
-                ax.plot(df_gyro.index, kooijman_func(df_gyro.index, popt[0], popt[1], popt[2], popt[3], popt[4]))
+                ax.plot(df_gyro.loc[:,"time"], df_gyro.loc[:,"gyro_x"], '.')
+                ax.plot(df_gyro.loc[:,"time"], kooijman_func(df_gyro.loc[:,"time"], popt[0], popt[1], popt[2], popt[3], popt[4]))
+                ax.set_xlabel("Time since perturbation [s]")
+                ax.set_ylabel("Roll rate [rad/s]")
                 fig.show()
                 fig.waitforbuttonpress()
 
