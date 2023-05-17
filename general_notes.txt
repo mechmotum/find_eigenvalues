@@ -1,0 +1,6 @@
+- segment end -> when positive acc occurs, because than means someone  or the harness is pushing/pulling the bike
+
+- weird oscilations in velocity sometimes -> due to treadmill or inaccurate sensor?
+	|-> often at 16 km/h (~4.5ms)
+	|-> sound that treadmill made?
+
