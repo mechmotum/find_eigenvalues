@@ -1,0 +1,8 @@
+numpy>=1.6.1
+canmatrix
+pandas
+can_decoder
+mdf_iter
+matplotlib>=1.1.1
+scipy
+BicycleParameters @ git+https://github.com/moorepants/BicycleParameters@master
