@@ -9,9 +9,7 @@ from data import bike_without_rider
 from model import SteerControlModel
 
 def main():
-
     path = "finalized_logs"
-    prefix = "12-May-2023-10-11-04-bas-on-gain-6-speed-6"
     number_of_files = 3
     show_plots = False
 
@@ -30,7 +28,7 @@ def main():
             popt, pcov = spo.curve_fit(kooijman_func,
                                 df_gyro.loc[:,"time"],
                                 df_gyro.loc[:,"gyro_x"],
-                                p0=(0.03, -0.01, 1.0, 0.05, -0.7))
+                                p0=(0.03, -1.0, 1.0, 7.0, -0.7))
             eig_real.append(popt[1])
             eig_img.append(popt[3])
 
@@ -52,8 +50,9 @@ def main():
     print(f"Imaginary: {eigenvalues_img}")
 
     velocities_ms = [vel / 3.6 for vel in velocities]
-    plt.plot(velocities_ms, eigenvalues_real, '.')
-    plt.plot(velocities_ms, eigenvalues_img, '.')
+    plt.plot(velocities_ms, eigenvalues_real, '.', label="Measured real eigenvalues")
+    plt.plot(velocities_ms, eigenvalues_img, '.', label='Measured imaginary eigenvalues')
+    plt.legend()
     plt.waitforbuttonpress()
 
 
@@ -69,20 +68,12 @@ def plot_theoretical_eigenvalues():
     parameter_set = Meijaard2007ParameterSet(bike_without_rider, True)
     model = SteerControlModel(parameter_set)
 
-    speeds = np.array([0.6, 1.0, 1.4, 2.0, 3.0, 3.2, 4.0, 4.8, 6.4, 7, 10])
-    kphis = np.array([-80, -40, -25, -10, -5, -5, -5, -5, -5, -5, -5])
-    kphidots = np.array([-125, -80, -65, -50, -40, -35, -20, -10, -5, -5, -5]) - 5
-
-    f = lambda x, a, b, c: a*np.exp(b*x) + c
-    kphi_pars, _ = spo.curve_fit(f, speeds, kphis, p0=[-30, -2, -0.1])
-    kphidot_pars, _ = spo.curve_fit(f, speeds, kphidots, p0=[-30, -2, -0.1])
-
-    speeds = np.linspace(0.0, 10.0, num=1000)
-    kphis = f(speeds, *kphi_pars) - 1
-    kphidots = f(speeds, *kphidot_pars)
-
     fig, ax = plt.subplots()
-    ax = model.plot_eigenvalue_parts(ax=ax, v=speeds, kphi=kphis, kphidot=kphidots)
+    speeds = np.linspace(0.0, 10.0, num=101)
+    kphidots = -6.0*(5.0 - speeds)
+    kphidots[50:] = 0.0
+    ax = model.plot_eigenvalue_parts(ax=ax, v=speeds, kphidot=kphidots)
+    fig.suptitle('Eigenvalues of riderless balance-assist bicycle with gain of -6')
     fig.show()
 
 

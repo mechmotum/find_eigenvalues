@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize as spo
 
-from data import bike_without_rider
+# from data import bike_with_rider
+from data import rigid_bike_without_rider as bike_with_rider
 from model import SteerControlModel
 
 SCRIPT_PATH = os.path.realpath(__file__)
@@ -53,6 +54,14 @@ fig = axes[0, 0].figure
 fig.savefig(os.path.join(FIG_DIR, 'roll-rate-gain-evec-effect.png'),
             dpi=300)
 
+# Figure 4: Controller that Leila implemented on the balance assist bicycle.
+fig, ax = plt.subplots()
+speeds = np.linspace(0.0, 10.0, num=101)
+kphidots = -8.0*(5.0 - speeds)
+kphidots[50:] = 0.0
+ax = model.plot_eigenvalue_parts(ax=ax, v=speeds, kphidot=kphidots)
+fig.savefig(os.path.join(FIG_DIR, 'leilas-controller-eig-vs-speeds.png'),
+            dpi=300)
 
 # these were manually generated from trial and error in pd_playground.ipynb
 speeds = np.array([0.6, 1.0, 1.4, 2.0, 3.0, 3.2, 4.0, 4.8, 6.4, 7, 10])
@@ -85,6 +94,7 @@ fig.savefig(os.path.join(FIG_DIR, 'pd-eigenvalues.png'), dpi=300)
 
 idx = 100
 times = np.linspace(0.0, 10.0, num=1000)
+
 def controller(t, x):
     K = np.array([[0.0, 0.0, 0.0, 0.0],
                   [kphis[idx], 0.0, kphidots[idx], 0.0]])
@@ -92,6 +102,7 @@ def controller(t, x):
     if np.abs(torques[1]) >= 10.0:
         torques[1] = np.sign(torques[1])*10.0
     return torques
+
 x0 = np.deg2rad([5.0, -10.0, 0.0, 0.0])
 axes = model.plot_simulation(times, x0, input_func=controller, v=speeds[idx])
 axes[0].set_title('Speed = {:1.2f}'.format(speeds[idx]))
