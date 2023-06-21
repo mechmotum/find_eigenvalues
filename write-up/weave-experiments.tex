@@ -4,7 +4,7 @@
 \usepackage{graphicx}
 \usepackage{parskip}
 
-\title{Balance-assist bicycle weave mode experiments}
+\title{Balance-assist bicycle weave mode experiments: measurements and parameter adjustions}
 \author{Marten Haitjema}
 \date{\today}
 
@@ -36,6 +36,8 @@ The imaginary part of the eigenvalue is given by the frequency $\omega$. The rea
 
 \section{Results}
 Measured eigenvalues for a gain of -6 can be seen in figure \ref{gain-6-batavus-without-rider} and table \ref{table-eigenvalues-gain-6}. The results for a gain of -8 can be seen in figure \ref{gain-8-batavus-without-rider} and table \ref{table-eigenvalues-gain-8}. The results for a gain of -10 can be seen in figure \ref{gain-10-batavus-without-rider} and table \ref{table-eigenvalues-gain-10}.
+
+For the gain of -6, the theoretical weave mode of the Batavus Browser bicycle with a model of the balance-assist system is close the measured eigenvalues. For the gain of -8 and -10, the measured real part of the eigenvalues is less damped than the Batavus Browser. For all gains, the imaginary part of the eigenvalues is substantially lower than the theoretical eigenvalues.
 
 
 \begin{table}[]
@@ -109,14 +111,39 @@ Measured eigenvalues for a gain of -6 can be seen in figure \ref{gain-6-batavus-
     \label{gain-10-batavus-without-rider}
 \end{figure}
 
-\section{Discussion}
-For the gain of -6, the theoretical weave mode of the Batavus Browser bicycle with a model of the balance-assist system is close the measured eigenvalues. For the gain of -8 and -10, the measured real part of the eigenvalues is less damped than the Batavus Browser. For all gains, the imaginary part of the eigenvalues is substantially lower than the theoretical eigenvalues. 
 
 \section{Adjusting model parameters}
-To have the model better approximate the eigenvalues of the balance-assist bicycle, the model parameters can be adjusted to better fit the measured values. The adjustments of these values should be based on the physical properties of the balance-assist bicycle.
+To have the model better approximate the eigenvalues of the balance-assist bicycle, the model parameters can be adjusted to better fit the measured values. The adjustments of these values should be based on the physical properties of the balance-assist bicycle. 
+
+The balance-assist bicycle differs from the Batavus Browser bicycle in a couple of ways. First and foremost, unlike the Batavus Browser the balance-assist bicycle is electric and therefore has a heavy battery in the downtube. Moreover, the balance-assist bicycle has electronics mounted at the rear rack. These differences will influence the position of the center of mass and the mass moment of inertia. Secondly, the balance-assist bicycle has a motor at the head tube of the bicycle. This will effect the position of the center of mass and the mass moment of inertia of the front frame. In this section, an approximation of these changes will be made in order to better approach the measured eigenvalues. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/KooijmanFBD.jpg}
+    \caption{Diagram of the coordinate system used to define the parameters. Note that the x-axis starts at the rear wheel ground contact point and that the positive z-axis points downwards. Adapted from Kooijman et al. \cite{Kooijman2008}.}
+\end{figure}
 
 
-
+\begin{table}[]
+    \centering
+    \caption{Measured parameters of the Batavus Browser and proposed parameters for the balance-assist bicycle. Only parameters that are changed are displayed.}
+    \label{parameter-changes}
+    \begin{tabular}{c|c|c}
+        \textbf{Parameter} & \textbf{Batavus Browser} & \textbf{Balance-assist bicycle} \\ \hline
+        $x_B$              & 0.275951285677           & ?                               \\
+        $z_B$              & -0.537842424305          & -0.337842424305                 \\
+        $I_{Bxx}$          & 0.52962890621            & ?                               \\
+        $I_{Bxz}$          & -0.116285607878          & ?                               \\
+        $I_{Byy}$          & 1.3163960125             & ?                               \\
+        $I_{Bzz}$          & 0.756786895402           & ?                               \\
+        $x_H$              & 0.866949640247           & ?                               \\
+        $z_H$              & -0.748236400835          & -0.848236400835                 \\
+        $I_{Hxx}$          & 0.25335539588            & ?                               \\
+        $I_{Hxz}$          & -0.0720217263293         & ?                               \\
+        $I_{Hyy}$          & 0.245827908036           & ?                               \\   
+        $I_{Hzz}$          & 0.0955686343473          & ?
+    \end{tabular}
+\end{table}
 
 
 \bibliographystyle{plain}
