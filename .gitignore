@@ -1,2 +1,4 @@
 find-eigenvalues-env
 __pycache__
+build/
+write-up/build/
