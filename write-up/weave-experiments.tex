@@ -16,8 +16,7 @@ Research into the balance-assist bicycle is done with a model of a bicycle. The 
 model are for a different bicycle than the balance-assist bicycle. It is unknown how well the model
 represents the balance-assist bicycle. It is important for the balance-assist bicycle to be
 properly modelled, because the controller is designed based on the (thus far inaccurate) model. If
-the model is not representative of the balance-assist bicycle, the designed controller may be
-invalid.
+the model is not representative of the bicycle, the designed controller may be invalid.
 
 The goal of this experiment is to identify the actual weave mode of the balance-assist bicycle for
 different controller gains.
@@ -34,16 +33,63 @@ fit to the roll rate data:
 \end{equation}
 
 The imaginary part of the eigenvalue is given by the frequency $\omega$. The real part is given by
-the damping $d$. An example of the function fitted to roll rate data can be seen in figure
-\ref{example-roll-rate-fit}. Eigenvalues were measured with the balance-assist system on with a
-gain of -6, -8 and -8 at speeds of 6, 8, 10, 12, 14, 16 and 18 km/h. For each velocity, the real
-and imaginary part of the eigenvalues were averaged over three perturbations.
+the damping $d$.$c_1$, $c_2$ and $c_3$ are constants. An example of the function fitted to roll
+rate data can be seen in figure \ref{example-roll-rate-fit}. Eigenvalues were measured with the
+balance-assist system on with a gain of -6, -8 and -8 at speeds of 6, 8, 10, 12, 14, 16 and 18
+km/h. For each velocity, the real and imaginary part of the eigenvalues were averaged over three
+perturbations.
+
+The theoretical eigenvalues have been calculated for the \emph{rigid bicycle} with an added
+balance-assist controller model. Table \ref{table-bicycle-parameters} shows the parameters of the
+bicycle model. The rigid bicycle parameters have been chosen because, of all the bicycles that have
+been measured, the rigid bicycle most closely represents the mass distribution of the
+balance-assist bicycle. The control law for the modelled controller is given by:
+
+\begin{gather}
+    T_{\delta} = -gain(5.0 - v)\Dot{\phi} \quad \textnormal{for} \quad  0.0 < v < 5.0 \\
+    T_{\delta} = 0 \quad \textnormal{for} \quad v > 5.0
+\end{gather}
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=\columnwidth]{figures/example_roll_rate_fit.png}
     \caption{Example of a fit of a decaying oscillation to roll rate data.} \label{example-roll-rate-fit}
 \end{figure}
+
+\begin{table}
+    \centering
+    \caption{Bicycle parameters used for the theoretical eigenvalues.} \label{table-bicycle-parameters}
+    \begin{tabular}{c|c}
+        \textbf{Parameter} & \textbf{Value}   \\ \hline
+        IBxx               & 2.63751918806    \\
+        IBxz               & 0.65355108991    \\
+        IByy               & 4.27679806219    \\
+        IBzz               & 1.94277851254    \\
+        IFxx               & 0.0524475128396  \\
+        IFyy               & 0.0983720589324  \\
+        IHxx               & 0.343873849682   \\
+        IHxz               & -0.0918999164196 \\
+        IHyy               & 0.339925043172   \\
+        IHzz               & 0.10310836332    \\
+        IRxx               & 0.0700963804567  \\
+        IRyy               & 0.12934189355    \\
+        c                  & 0.0599399125715  \\
+        g                  & 9.81             \\
+        la                 & 0.317489078499   \\
+        mB                 & 22.9             \\
+        mF                 & 1.55             \\
+        mH                 & 5.4              \\
+        mR                 & 4.9              \\
+        rF                 & 0.335572561302   \\
+        rR                 & 0.332528026978   \\
+        v                  & 1.0              \\
+        w                  & 1.06378677685    \\
+        xB                 & 0.334844476225   \\
+        xH                 & 0.818396445062   \\
+        zB                 & -0.735628402212  \\
+        zH                 & -0.98585673135
+    \end{tabular}
+\end{table}
 
 \section{Results}
 The mean, minimal and maximal $r^2$ value for the fitted function on the roll data can be seen in
@@ -52,7 +98,7 @@ balance-assist controller can be seen in figure \ref{fig-all-gains}. Furthermore
 eigenvalues for gain -6 can be seen in table \ref{table-eigenvalues-gain-6}, for gain -8 in table
 \ref{table-eigenvalues-gain-8} and for gain -10 in table \ref{table-eigenvalues-gain-10}.
 
-\begin{figure}
+\begin{figure}[h]
     \centering
     \includegraphics[width=\columnwidth]{figures/all-gains.png}
     \caption{Theoretical eigenvalues of the rigid bicycle with added balance-assist and control compared to the
@@ -120,6 +166,11 @@ eigenvalues for gain -6 can be seen in table \ref{table-eigenvalues-gain-6}, for
 \end{table}
 
 \section{Discussion}
+Overall it can be seen that the theoretical eigenvalues of the rigid bicycle with modelled
+balance-assist controller do not line up with the measured eigenvalues of the balance-assist
+bicycle. The imaginary part of the measured eigenvalues are consistently lower than the theoretical
+eigenvalues.
+
 It is interesting that the weave mode is similarly damped for all three gains. In contrast, the
 imaginary part of the eigenvalues increases as the gain gets larger. This would suggest that there
 is no reason to set the gain any larger than -6.
@@ -134,7 +185,7 @@ eigenvalues. For example, the \emph{symfit} package \cite{symfit} could be used 
 equations of motion of the bicycle model to the measured eigenvalues. Another approach would be to
 optimize the gain of the theoretical controller to better approximate the measured eigenvalues. The
 theoretical controller is not identical to the actual controller on the bicycle. By assuming the
-parameters of the rigid bicycle approximately correct, the difference in the theoretical and
+parameters of the rigid bicycle to be approximately correct, the difference in the theoretical and
 measured eigenvalues should be due to the difference in balance-assist controller.
 
 \bibliographystyle{plain}
