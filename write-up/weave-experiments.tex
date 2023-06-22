@@ -4,41 +4,72 @@
 \usepackage{graphicx}
 \usepackage{parskip}
 
-\title{Balance-assist bicycle weave mode experiments: measurements and parameter adjustions}
-\author{Marten Haitjema}
+\title{Balance-assist bicycle weave mode experiments: measurements and parameter adjustments}
+\author{Marten Haitjema}  
 \date{\today}
 
 \begin{document}
 \maketitle
 
 \section{Introduction}
-Research into the balance-assist bicycle is done with a model of a bicycle. The parameters of this model are for a different bicycle than the balance-assist bicycle. It is unknown how well the model represents the balance-assist bicycle. It is important for the balance-assist bicycle to be properly modelled, because the controller is designed based on the (thus far inaccurate) model. If the model is not representative of the balance-assist bicycle, the designed controller may be invalid. 
+Research into the balance-assist bicycle is done with a model of a bicycle. The parameters of this
+model are for a different bicycle than the balance-assist bicycle. It is unknown how well the model
+represents the balance-assist bicycle. It is important for the balance-assist bicycle to be
+properly modelled, because the controller is designed based on the (thus far inaccurate) model. If
+the model is not representative of the balance-assist bicycle, the designed controller may be
+invalid.
 
-The goal of this experiment is to identify the actual weave mode of the balance-assist bicycle for different controller gains. 
+The goal of this experiment is to identify the actual weave mode of the balance-assist bicycle for
+different controller gains.
 
 \section{Methods}
-The weave mode will be identified by manually perturbing the bicycle at the seat post, and measuring the consequent roll rate. The weave mode can be found be fitting a decaying oscillation to this data. The following equation, defined by Kooijman et al. \cite{Kooijman2008}, is used to fit to the roll rate data:
+The weave mode will be identified by manually perturbing the bicycle at the seat post, and
+measuring the consequent roll rate. The weave mode can be found be fitting a decaying oscillation
+to this data. The following equation, defined by Kooijman et al. \cite{Kooijman2008}, is used to
+fit to the roll rate data:
 
 \begin{equation}
     c_1 + e^{dt} (c_2\cos(\omega t) + c_3\sin(\omega t))
     \label{kooijman-func}
 \end{equation}
 
-The imaginary part of the eigenvalue is given by the frequency $\omega$. The real part is given by the damping $d$. An example of the function fitted to roll rate data can be seen in figure \ref{example-roll-rate-fit}. Eigenvalues were measured with the balance-assist system on with a gain of -6, -8 and -8 at speeds of 6, 8, 10, 12, 14, 16 and 18 km/h. For each velocity, the real and imaginary part of the eigenvalues were averaged over three perturbations.
+The imaginary part of the eigenvalue is given by the frequency $\omega$. The real part is given by
+the damping $d$. An example of the function fitted to roll rate data can be seen in figure
+\ref{example-roll-rate-fit}. Eigenvalues were measured with the balance-assist system on with a
+gain of -6, -8 and -8 at speeds of 6, 8, 10, 12, 14, 16 and 18 km/h. For each velocity, the real
+and imaginary part of the eigenvalues were averaged over three perturbations.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=\columnwidth]{figures/example_roll_rate_fit.png}
-    \caption{Example of a fit of a decaying oscillation to roll rate data.}
-    \label{example-roll-rate-fit}
+    \caption{Example of a fit of a decaying oscillation to roll rate data.} \label{example-roll-rate-fit}
 \end{figure}
 
-
 \section{Results}
-Measured eigenvalues for a gain of -6 can be seen in figure \ref{gain-6-batavus-without-rider} and table \ref{table-eigenvalues-gain-6}. The results for a gain of -8 can be seen in figure \ref{gain-8-batavus-without-rider} and table \ref{table-eigenvalues-gain-8}. The results for a gain of -10 can be seen in figure \ref{gain-10-batavus-without-rider} and table \ref{table-eigenvalues-gain-10}.
+The mean, minimal and maximal $r^2$ value for the fitted function on the roll data can be seen in
+table \ref{table-r-squared.} A plot of the measured eigenvalues for different gains of the
+balance-assist controller can be seen in figure \ref{fig-all-gains}. Furthermore, the measured
+eigenvalues for gain -6 can be seen in table \ref{table-eigenvalues-gain-6}, for gain -8 in table
+\ref{table-eigenvalues-gain-8} and for gain -10 in table \ref{table-eigenvalues-gain-10}.
 
-For the gain of -6, the theoretical weave mode of the Batavus Browser bicycle with a model of the balance-assist system is close the measured eigenvalues. For the gain of -8 and -10, the measured real part of the eigenvalues is less damped than the Batavus Browser. For all gains, the imaginary part of the eigenvalues is substantially lower than the theoretical eigenvalues.
+\begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/all-gains.png}
+    \caption{Theoretical eigenvalues of the rigid bicycle with added balance-assist and control compared to the
+        measured eigenvalues of the balance-assist bicycle. The lightest color represents a gain of -6, the
+        medium color a gain of -8 and the dark color a gain of -10.} \label{fig-all-gains}
+\end{figure}
 
+\begin{table}[]
+    \centering
+    \caption{Mean, maximal and minimal $r^2$ for the three gains.} \label{table-r-squared}
+    \begin{tabular}{c|c|c|c}
+        \textbf{Gain} & \textbf{Mean} & \textbf{Minimal} & \textbf{Maximal} \\ \hline
+        -6            & 0.98          & 0.81             & 1.00             \\
+        -8            & 0.99          & 0.98             & 1.00             \\
+        -10           & 0.97          & 0.82             & 0.99
+    \end{tabular}
+\end{table}
 
 \begin{table}[]
     \centering
@@ -52,17 +83,9 @@ For the gain of -6, the theoretical weave mode of the Batavus Browser bicycle wi
         3.33                    & -0.64501           & 7.79933                 \\
         3.89                    & -0.57419           & 6.93977                 \\
         4.44                    & -0.73719           & 7.33274                 \\
-        5.00                    & -0.82591           & 4.65962                
+        5.00                    & -0.82591           & 4.65962
     \end{tabular}
 \end{table}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/gain-6-batavus-without-rider.png}
-    \caption{Theoretical eigenvalues of Batavus Browser with balance-assist controller and the measured eigenvalues at gain of -6. The real part of the measured eigenvalues is displayed in black, the imaginary part is displayed  in cyan.}
-    \label{gain-6-batavus-without-rider}
-\end{figure}
-
 
 \begin{table}[]
     \centering
@@ -76,17 +99,9 @@ For the gain of -6, the theoretical weave mode of the Batavus Browser bicycle wi
         3.33                    & -0.82441           & 9.27701                 \\
         3.89                    & -0.56166           & 8.26214                 \\
         4.44                    & -0.70618           & 5.97152                 \\
-        5.00                    & -0.90672           & 5.32524                
+        5.00                    & -0.90672           & 5.32524
     \end{tabular}
 \end{table}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/gain-8-batavus-without-rider.png}
-    \caption{Theoretical eigenvalues of Batavus Browser with balance-assist controller and the measured eigenvalues at gain of -8. The real part of the measured eigenvalues is displayed in black, the imaginary part is displayed  in cyan.}
-    \label{gain-8-batavus-without-rider}
-\end{figure}
-
 
 \begin{table}[]
     \centering
@@ -94,57 +109,33 @@ For the gain of -6, the theoretical weave mode of the Batavus Browser bicycle wi
     \label{table-eigenvalues-gain-10}
     \begin{tabular}{c|c|c}
         \textbf{Velocity (m/s)} & \textbf{Real part} & \textbf{Imaginary part} \\ \hline
-        1.66                    & -3.73303          & 11.03922                 \\
-        2.22                    & -1.83437          & 10.90979                 \\
-        2.78                    & -1.08183          & 10.84567                 \\
-        3.33                    & -0.78383          & 10.49930                 \\
-        3.89                    & -0.59061          & 9.07418                 \\
-        4.44                    & -0.53405          & 6.87337                 \\
-        5.00                    & -0.02263          & 4.16736                
+        1.66                    & -3.73303           & 11.03922                \\
+        2.22                    & -1.83437           & 10.90979                \\
+        2.78                    & -1.08183           & 10.84567                \\
+        3.33                    & -0.78383           & 10.49930                \\
+        3.89                    & -0.59061           & 9.07418                 \\
+        4.44                    & -0.53405           & 6.87337                 \\
+        5.00                    & -0.02263           & 4.16736
     \end{tabular}
 \end{table}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/gain-10-batavus-without-rider.png}
-    \caption{Theoretical eigenvalues of Batavus Browser with balance-assist controller and the measured eigenvalues at gain of -10. The real part of the measured eigenvalues is displayed in black, the imaginary part is displayed  in cyan.}
-    \label{gain-10-batavus-without-rider}
-\end{figure}
+\section{Discussion}
+It is interesting that the weave mode is similarly damped for all three gains. In contrast, the
+imaginary part of the eigenvalues increases as the gain gets larger. This would suggest that there
+is no reason to set the gain any larger than -6.
 
+Looking at the $r^2$ values in table \ref{table-r-squared}, it can be seen that the function in
+equation \ref{kooijman-func} is fitted best to the roll data for a gain of -8. Both the -6 and -8
+gains have a much lower minimal $r^2$. However, the average $r^2$ for these gains is still close to
+1.
 
-\section{Adjusting model parameters}
-To have the model better approximate the eigenvalues of the balance-assist bicycle, the model parameters can be adjusted to better fit the measured values. The adjustments of these values should be based on the physical properties of the balance-assist bicycle. 
-
-The balance-assist bicycle differs from the Batavus Browser bicycle in a couple of ways. First and foremost, unlike the Batavus Browser the balance-assist bicycle is electric and therefore has a heavy battery in the downtube. Moreover, the balance-assist bicycle has electronics mounted at the rear rack. These differences will influence the position of the center of mass and the mass moment of inertia. Secondly, the balance-assist bicycle has a motor at the head tube of the bicycle. This will effect the position of the center of mass and the mass moment of inertia of the front frame. In this section, an approximation of these changes will be made in order to better approach the measured eigenvalues. 
-
-\begin{figure}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/KooijmanFBD.jpg}
-    \caption{Diagram of the coordinate system used to define the parameters. Note that the x-axis starts at the rear wheel ground contact point and that the positive z-axis points downwards. Adapted from Kooijman et al. \cite{Kooijman2008}.}
-\end{figure}
-
-
-\begin{table}[]
-    \centering
-    \caption{Measured parameters of the Batavus Browser and proposed parameters for the balance-assist bicycle. Only parameters that are changed are displayed.}
-    \label{parameter-changes}
-    \begin{tabular}{c|c|c}
-        \textbf{Parameter} & \textbf{Batavus Browser} & \textbf{Balance-assist bicycle} \\ \hline
-        $x_B$              & 0.275951285677           & ?                               \\
-        $z_B$              & -0.537842424305          & -0.337842424305                 \\
-        $I_{Bxx}$          & 0.52962890621            & ?                               \\
-        $I_{Bxz}$          & -0.116285607878          & ?                               \\
-        $I_{Byy}$          & 1.3163960125             & ?                               \\
-        $I_{Bzz}$          & 0.756786895402           & ?                               \\
-        $x_H$              & 0.866949640247           & ?                               \\
-        $z_H$              & -0.748236400835          & -0.848236400835                 \\
-        $I_{Hxx}$          & 0.25335539588            & ?                               \\
-        $I_{Hxz}$          & -0.0720217263293         & ?                               \\
-        $I_{Hyy}$          & 0.245827908036           & ?                               \\   
-        $I_{Hzz}$          & 0.0955686343473          & ?
-    \end{tabular}
-\end{table}
-
+Future work can adjust the parameters of the bicycle model to better represent the measured
+eigenvalues. For example, the \emph{symfit} package \cite{symfit} could be used to fit the symbolic
+equations of motion of the bicycle model to the measured eigenvalues. Another approach would be to
+optimize the gain of the theoretical controller to better approximate the measured eigenvalues. The
+theoretical controller is not identical to the actual controller on the bicycle. By assuming the
+parameters of the rigid bicycle approximately correct, the difference in the theoretical and
+measured eigenvalues should be due to the difference in balance-assist controller.
 
 \bibliographystyle{plain}
 \bibliography{weave-experiments}
