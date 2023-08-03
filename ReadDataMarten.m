@@ -30,7 +30,7 @@ for i = 1:length(files)
     msg_timetable.Time = msg_timetable.Time + mdf_obj.InitialTimestamp + hours(2);
     msg_data = canSignalTimetable(msg_timetable);
 
-    save(finalized_path + ".mat", "msg_data");
+    save(finalized_path + ".mat", "msg_data");  
 
     % Write specific timetables to CSV to analyze in python
     writetimetable(msg_data.WSS_Rear, finalized_path + "-wheelspeed.csv")

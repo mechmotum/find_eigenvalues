@@ -1,0 +1,152 @@
+VERSION ""
+
+
+NS_ :
+    NS_DESC_
+    CM_
+    BA_DEF_
+    BA_
+    VAL_
+    CAT_DEF_
+    CAT_
+    FILTER
+    BA_DEF_DEF_
+    EV_DATA_
+    ENVVAR_DATA_
+    SGTYPE_
+    SGTYPE_VAL_
+    BA_DEF_SGTYPE_
+    BA_SGTYPE_
+    SIG_TYPE_REF_
+    VAL_TABLE_
+    SIG_GROUP_
+    SIG_VALTYPE_
+    SIGTYPE_VALTYPE_
+    BO_TX_BU_
+    BA_DEF_REL_
+    BA_REL_
+    BA_DEF_DEF_REL_
+    BU_SG_REL_
+    BU_EV_REL_
+    BU_BO_REL_
+    SG_MUL_VAL_
+
+BS_: 
+BU_: SensorBox ECU LWS7 
+BO_ 64 Buttons: 1 Vector__XXX
+   SG_ ES_slow : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+   SG_ ES_fast : 6|1@1+ (1,0) [0|0] "" Vector__XXX
+   SG_ B3_l : 5|1@1+ (1,0) [0|0] "" Vector__XXX
+   SG_ B3_s : 4|1@1+ (1,0) [0|0] "" Vector__XXX
+   SG_ B2_l : 3|1@1+ (1,0) [0|0] "" Vector__XXX
+   SG_ B2_s : 2|1@1+ (1,0) [0|0] "" Vector__XXX
+   SG_ B1_l : 1|1@1+ (1,0) [0|0] "" Vector__XXX
+   SG_ B1_s : 0|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 71 WSS_Rear: 4 Vector__XXX
+   SG_ ws_rear_plaus : 24|8@1- (1,0) [0|0] "" Vector__XXX
+   SG_ ws_rear_ok : 16|8@1- (1,0) [0|0] "" Vector__XXX
+   SG_ ws_rear : 0|16@1- (0.01,0) [0|0] "m/s" Vector__XXX
+
+BO_ 70 WSS_Front: 4 Vector__XXX
+   SG_ ws_front_plaus : 24|8@1- (1,0) [0|0] "" Vector__XXX
+   SG_ ws_front_ok : 16|8@1- (1,0) [0|0] "" Vector__XXX
+   SG_ ws_front : 0|16@1- (0.01,0) [0|0] "m/s" Vector__XXX
+
+BO_ 68 IMU_Orientation: 8 Vector__XXX
+   SG_ angle_valid : 48|1@1- (1,0) [0|0] "" Vector__XXX
+   SG_ yaw : 32|16@1- (0.001,0) [0|0] "rad" Vector__XXX
+   SG_ pitch : 16|16@1- (0.001,0) [0|0] "rad" Vector__XXX
+   SG_ roll : 0|16@1- (0.001,0) [0|0] "rad" Vector__XXX
+
+BO_ 67 IMU_Accel: 8 Vector__XXX
+   SG_ accel_accuracy : 48|8@1- (1,0) [0|0] "" Vector__XXX
+   SG_ accel_z : 32|16@1- (0.001,0) [0|0] "m/s^2" Vector__XXX
+   SG_ accel_y : 16|16@1- (0.001,0) [0|0] "m/s^2" Vector__XXX
+   SG_ accel_x : 0|16@1- (0.001,0) [0|0] "m/s^2" Vector__XXX
+
+BO_ 66 IMU_Gyro: 8 Vector__XXX
+   SG_ gyro_accuracy : 48|8@1- (1,0) [0|0] "" Vector__XXX
+   SG_ gyro_z : 32|16@1- (0.001,0) [0|0] "rad/s" Vector__XXX
+   SG_ gyro_y : 16|16@1- (0.001,0) [0|0] "rad/s" Vector__XXX
+   SG_ gyro_x : 0|16@1- (0.001,0) [0|0] "rad/s" Vector__XXX
+
+BO_ 342 LWS_STD: 6 Vector__XXX
+   SG_ Alive_Counter : 44|2@1+ (1,0) [0|0] "" Vector__XXX
+   SG_ CHECK_SUM : 40|4@1+ (1,0) [0|0] "" Vector__XXX
+   SG_ Comp_CAL : 33|1@1+ (1,0) [0|0] "" Vector__XXX
+   SG_ Comp_Trim : 34|1@1+ (1,0) [0|0] "" Vector__XXX
+   SG_ Diag_Code : 35|5@1+ (1,0) [0|0] "" Vector__XXX
+   SG_ LWS_ANGLE : 7|16@0- (0.1,0) [-900|900] "" Vector__XXX
+   SG_ LWS_SPEED : 23|16@0- (1,0) [-2000|2000] "" Vector__XXX
+   SG_ State_OK : 32|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 0 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+   SG_ Faults : 0|32@0+ (1,0) [0|0] "" Vector__XXX
+   SG_ PSI : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+   SG_ THETA : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+
+BO_ 160 LWS_INFO: 8 Vector__XXX
+
+BO_ 256 PS_Motor_CONTROL: 8 Vector__XXX
+   SG_ Align : 15|8@0- (1,0) [0|0] "" Vector__XXX
+   SG_ RUN : 7|8@0- (1,0) [0|0] "" Vector__XXX
+   SG_ SafetyCAN : 16|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 257 PS_Motor_SET: 8 Vector__XXX
+   SG_ iq_current_MAX : 23|16@0- (0.1,0) [0|0] "[A]" Vector__XXX
+   SG_ iq_current_SET : 7|16@0- (0.1,0) [0|0] "[A]" Vector__XXX
+
+BO_ 512 PS_Motor: 8 Vector__XXX
+   SG_ iq_current : 55|16@0- (0.001,0) [0|0] "[mA]" Vector__XXX
+   SG_ TemperatureFET : 23|16@0- (0.1,0) [0|0] "[degC]" Vector__XXX
+   SG_ TemperatureMotor : 7|16@0- (0.1,0) [0|0] "[degC]" Vector__XXX
+   SG_ voltage : 39|16@0- (0.1,0) [0|0] "[V]" Vector__XXX
+
+BO_ 513 PS_State: 8 Vector__XXX
+   SG_ SensorCalibration : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+   SG_ state : 7|8@0- (1,0) [0|0] "" Vector__XXX
+   SG_ SWversion : 15|8@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 514 PS_Faults: 8 Vector__XXX
+   SG_ fault_ADC_Error : 6|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_AlignError : 14|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_CalibError : 15|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_CANoverrun : 20|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_CTU_Error : 7|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_EmergencySTOP : 21|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_FLEXPWM_Error : 5|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_FOCError : 13|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_InitError : 0|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_MainsFault : 28|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_OffCancError : 18|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_OverDCBusCurrent : 26|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_OverDCBusVoltage : 24|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_OverHeatingFET : 30|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_OverHeatingMotor : 19|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_OverLoad : 27|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_OverPhaseACurrent : 31|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_OverPhaseBCurrent : 16|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_OverPhaseCCurrent : 17|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_UnderDCBusVoltage : 25|1@0- (1,0) [0|0] "" Vector__XXX
+   SG_ fault_WrongHardware : 29|1@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 598 Feedback_LWS: 8 Vector__XXX
+   SG_ elwinkelLWS : 7|16@0- (0.1,0) [0|0] "" Vector__XXX
+
+BO_ 1984 LWS_CONFIG: 8 Vector__XXX
+   SG_ CCW M : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+   SG_ DATA : 8|56@1+ (1,0) [0|0] "" Vector__XXX
+
+BA_DEF_ "BusType" STRING ;
+BA_DEF_ BO_ "GenMsgBackgroundColor" STRING ;
+BA_DEF_ BO_ "GenMsgForegroundColor" STRING ;
+BA_DEF_DEF_ "BusType" "CAN";
+BA_DEF_DEF_ "GenMsgBackgroundColor" "#ffffff";
+BA_DEF_DEF_ "GenMsgForegroundColor" "#000000";
+VAL_ 256 Align 1 "ON" 0 "OFF";
+VAL_ 256 RUN 1 "START" 0 "STOP";
+VAL_ 256 SafetyCAN 1 "On" 0 "Off";
+VAL_ 513 SensorCalibration 1 "calibrated" 0 "NOT_calibrated";
+VAL_ 513 state 6 "run" 5 "align" 4 "calib" 3 "ready" 2 "fault" 1 "init" 0 "reset";
+VAL_ 513 SWversion 6 "run" 5 "align" 4 "calib" 3 "ready" 2 "fault" 1 "init" 0 "reset";
