@@ -24,6 +24,8 @@ for i = 1:length(files)
     % Read and decode data
     can_idx = 8;
     mdf_obj = mdf(finalized_path + ".MF4");
+    mdf_obj.ChannelNames;
+    mdf_obj.ChannelNames{can_idx};
     raw_timetable = read(mdf_obj, can_idx, mdf_obj.ChannelNames{can_idx});
     can_db = canDatabase("dbc_files" + filesep + "Fused_new.dbc");
     msg_timetable = canFDMessageTimetable(raw_timetable, can_db);

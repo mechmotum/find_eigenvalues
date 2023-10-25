@@ -1,12 +1,14 @@
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import numpy as np
 import scipy.optimize as spo
 
 from bicycleparameters.parameter_sets import Meijaard2007ParameterSet
-from data import balance_assist_without_rider, balance_assist_with_rider, rigid_bike_without_rider
+from data import balance_assist_without_rider, rigid_bike_without_rider
 from model import SteerControlModel
+
 
 def main():
     parameter_set = Meijaard2007ParameterSet(rigid_bike_without_rider, True)
@@ -23,7 +25,7 @@ def main():
             prefix = "12-May-2023-10-11-04-bas-on-gain-6-speed-"
         else:
             prefix = "12-May-2023-10-39-32-bas-on-gain-" + str(gain) + "-speed-"
-        real, img, r_squared = fit_curve(gain, prefix)
+        real, img, r_squared = fit_curve(gain, prefix, show_plots=True)
     
         kphidots = -gain*(5.0 - speeds)
         kphidots[50:] = 0.0
@@ -35,9 +37,19 @@ def main():
         plt.plot(
             velocities_ms, img, '.', label='Measured imaginary eigenvalues', color=colors_measured[i]
         )
-        # plt.legend()
+        plt.legend()
         print(f"R-squared values for gain {gain}: Mean: {np.mean(r_squared)}, Max: {np.max(r_squared)}, Min: {np.min(r_squared)}")
 
+
+    legend_elements = []
+    gains = ["-6", "-8", "-10"]
+    for i, colors in enumerate(zip(colors_theoretical, colors_measured)):
+        legend_elements.append(Line2D([0], [0], color=colors[0], lw=4, label="Theoretical, gain " + gains[i])),
+        legend_elements.append(Line2D([0], [0], marker="o", markerfacecolor=colors[1], color="w", lw=4, label="Measured, gain " + gains[i]))
+    
+    plt.legend(handles=legend_elements)
+
+    ax.set_xlabel("velocity [m/s]")
     fig.show()
     fig.suptitle('Theoretical eigenvalues of rigid bicycle compared to measured eigenvalues at gain of -6, -8 and -10', wrap=True)
     plt.savefig("figures/all-gains", dpi=300)
@@ -77,17 +89,21 @@ def fit_curve(gain: int, prefix: str, show_plots: bool = False):
             if show_plots:
                 print(popt)
                 fig, ax = plt.subplots(1,1)
-                ax.plot(df_gyro.loc[:,"time"], df_gyro.loc[:,"gyro_x"], '.')
+                ax.plot(df_gyro.loc[:,"time"], df_gyro.loc[:,"gyro_x"], '.', label="Measured data")
                 ax.plot(
                     df_gyro.loc[:,"time"],
                     kooijman_func(
                         df_gyro.loc[:,"time"], popt[0], popt[1], popt[2], popt[3], popt[4]
-                    )
+                    ),
+                    label="Fitted equation"
                 )
                 ax.set_xlabel("Time since perturbation [s]")
                 ax.set_ylabel("Roll rate [rad/s]")
+                ax.set_title("Measured roll rate data and fitted equation")
+                ax.grid(True)
+                ax.legend()
                 fig.show()
-                # fig.waitforbuttonpress()
+                fig.waitforbuttonpress()
 
 
         avg_eigenvalues_real.append(sum(eigenvalues_real)/np.size(eigenvalues_real))
