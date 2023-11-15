@@ -6,7 +6,11 @@ import numpy as np
 import scipy.optimize as spo
 
 from bicycleparameters.parameter_sets import Meijaard2007ParameterSet
-from data import balance_assist_without_rider, rigid_bike_without_rider
+from data import (
+    balance_assist_without_rider,
+    rigid_bike_without_rider,
+    rigid_bike_with_rider,
+)
 from model import SteerControlModel
 
 
