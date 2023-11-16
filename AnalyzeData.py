@@ -10,20 +10,39 @@ from data import (
     balance_assist_without_rider,
     rigid_bike_without_rider,
     rigid_bike_with_rider,
+    benchmark,
+    balance_assist_without_rider,
 )
-from model import SteerControlModel
+from model import SteerControlModel, Meijaard2007Model
 
 
 def main():
-    parameter_set = Meijaard2007ParameterSet(rigid_bike_without_rider, True)
+    parameter_set = Meijaard2007ParameterSet(balance_assist_without_rider, True)
     model = SteerControlModel(parameter_set)
-    fig, ax = plt.subplots()
+    # model = Meijaard2007Model(parameter_set)
     speeds = np.linspace(0.0, 6.0, num=61)
     velocities = [6, 8, 10, 12, 14, 16, 18]
     velocities_ms = [vel / 3.6 for vel in velocities]
     colors_measured = ["cornflowerblue", "blue", "darkblue"]
     colors_theoretical = ["lightgray", "gray", "black"]
 
+    fig = plot_measured_eigenvalues(
+        speeds, model, colors_theoretical, colors_measured, velocities_ms
+    )
+    fig.set_size_inches(8, 6)
+    fig.show()
+    fig.suptitle(
+        "Theoretical eigenvalues of balance-assist bicycle compared to measured eigenvalues at gain of -6, -8 and -10",
+        wrap=True,
+    )
+    plt.savefig("figures/all-gains", dpi=300)
+    fig.waitforbuttonpress()
+
+
+def plot_measured_eigenvalues(
+    speeds, model, colors_theoretical, colors_measured, velocities_ms
+):
+    fig, ax = plt.subplots()
     for i, gain in enumerate([6, 8, 10]):
         if gain == 6:
             prefix = "12-May-2023-10-11-04-bas-on-gain-6-speed-"
@@ -85,15 +104,8 @@ def main():
         )
 
     plt.legend(handles=legend_elements)
-
     ax.set_xlabel("velocity [m/s]")
-    fig.show()
-    fig.suptitle(
-        "Theoretical eigenvalues of rigid bicycle compared to measured eigenvalues at gain of -6, -8 and -10",
-        wrap=True,
-    )
-    plt.savefig("figures/all-gains", dpi=300)
-    fig.waitforbuttonpress()
+    return fig
 
 
 def fit_curve(gain: int, prefix: str, show_plots: bool = False):
