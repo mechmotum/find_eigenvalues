@@ -35,10 +35,10 @@ bike_with_rider = {
 }
 
 balance_assist_without_rider = {
-    "IBxx": 0.70967,  # c
-    "IBxz": 0.03844,  # c
-    "IByy": 1.24843,  # c
-    "IBzz": 1.86551,  # c
+    "IBxx": 2.63751918806,
+    "IBxz": 0.65355108991,
+    "IByy": 4.27679806219,
+    "IBzz": 1.94277851254,
     "IFxx": 0.0816,  # c
     "IFyy": 0.1566,  # c
     "IHxx": 0.343873849682,
