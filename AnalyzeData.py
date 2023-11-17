@@ -8,35 +8,164 @@ import scipy.optimize as spo
 from bicycleparameters.parameter_sets import Meijaard2007ParameterSet
 from data import (
     balance_assist_without_rider,
-    rigid_bike_without_rider,
-    rigid_bike_with_rider,
     benchmark,
     balance_assist_without_rider,
+    balance_assist_with_rider,
 )
 from model import SteerControlModel, Meijaard2007Model
 
 
 def main():
-    parameter_set = Meijaard2007ParameterSet(balance_assist_without_rider, True)
-    model = SteerControlModel(parameter_set)
-    # model = Meijaard2007Model(parameter_set)
+    parameter_set_bas = Meijaard2007ParameterSet(balance_assist_without_rider, False)
     speeds = np.linspace(0.0, 6.0, num=61)
     velocities = [6, 8, 10, 12, 14, 16, 18]
     velocities_ms = [vel / 3.6 for vel in velocities]
     colors_measured = ["cornflowerblue", "blue", "darkblue"]
     colors_theoretical = ["lightgray", "gray", "black"]
 
+    # plot benchmark + controller and measured
+    parameter_set_benchmark = Meijaard2007ParameterSet(benchmark, False)
+    model_benchmark_control = SteerControlModel(parameter_set_benchmark)
     fig = plot_measured_eigenvalues(
-        speeds, model, colors_theoretical, colors_measured, velocities_ms
+        speeds,
+        model_benchmark_control,
+        colors_theoretical,
+        colors_measured,
+        velocities_ms,
     )
     fig.set_size_inches(8, 6)
-    fig.show()
+    # fig.show()
     fig.suptitle(
-        "Theoretical eigenvalues of balance-assist bicycle compared to measured eigenvalues at gain of -6, -8 and -10",
+        "Theoretical eigenvalues of riderless benchmark bicycle with controller compared to measured eigenvalues at gain of -6, -8 and -10",
         wrap=True,
     )
-    plt.savefig("figures/all-gains", dpi=300)
-    fig.waitforbuttonpress()
+    plt.savefig("figures/all-gains-benchmark-control-no-rider", dpi=300)
+    # fig.waitforbuttonpress()
+
+    # plot theoretical balance-assist with controller and measured
+    model_bas_control = SteerControlModel(parameter_set_bas)
+    fig = plot_measured_eigenvalues(
+        speeds, model_bas_control, colors_theoretical, colors_measured, velocities_ms
+    )
+    fig.set_size_inches(8, 6)
+    # fig.show()
+    fig.suptitle(
+        "Theoretical eigenvalues of riderless balance-assist bicycle with controller compared to measured eigenvalues at gain of -6, -8 and -10",
+        wrap=True,
+    )
+    plt.savefig("figures/all-gains-bas-control-no-rider", dpi=300)
+    # fig.waitforbuttonpress()
+
+    # plot theoretical balance-assist without controller
+    model_bas_normal = Meijaard2007Model(parameter_set_bas)
+    fig, ax = plt.subplots()
+    ax = model_bas_normal.plot_eigenvalue_parts(
+        ax=ax,
+        v=speeds,
+        colors=[
+            colors_theoretical[-1],
+            colors_theoretical[-1],
+            colors_theoretical[-1],
+            colors_theoretical[-1],
+        ],
+    )
+    legend_elements = []
+    legend_elements.append(
+        Line2D(
+            [0],
+            [0],
+            color=colors_theoretical[-1],
+            lw=4,
+            label="Real",
+        )
+    )
+    legend_elements.append(
+        Line2D(
+            [0],
+            [0],
+            color=colors_theoretical[-1],
+            linestyle="--",
+            lw=4,
+            label="Imaginary",
+        )
+    )
+    fig.set_size_inches(8, 6)
+    ax.set_xlabel("velocity [m/s]")
+    plt.legend(handles=legend_elements)
+    # fig.show()
+    fig.suptitle(
+        "Theoretical eigenvalues of riderless balance-assist bicycle without controller",
+        wrap=True,
+    )
+    plt.savefig("figures/theoretical-bas-no-control-no-rider", dpi=300)
+    # fig.waitforbuttonpress()
+
+    # plot theoretical balance-assist with rider without controller
+    parameter_set_bas_rider = Meijaard2007ParameterSet(balance_assist_with_rider, True)
+    model_bas_rider = Meijaard2007Model(parameter_set_bas_rider)
+    fig, ax = plt.subplots()
+    ax = model_bas_rider.plot_eigenvalue_parts(
+        ax=ax,
+        v=speeds,
+        colors=[
+            colors_theoretical[-1],
+            colors_theoretical[-1],
+            colors_theoretical[-1],
+            colors_theoretical[-1],
+        ],
+    )
+    fig.set_size_inches(8, 6)
+    # plt.legend(handles=legend_elements)
+    # # fig.show()
+    # fig.suptitle(
+    #     "Theoretical eigenvalues of balance-assist bicycle with rigid rider and without controller",
+    #     wrap=True,
+    # )
+    # plt.savefig("figures/theoretical-bas-no-control-with-rider", dpi=300)
+    # # fig.waitforbuttonpress()
+
+    # plot balance assist with rider with controller
+    parameter_set_bas_rider = Meijaard2007ParameterSet(balance_assist_with_rider, True)
+    model_bas_rider_control = SteerControlModel(parameter_set_bas_rider)
+    for i, gain in enumerate([6, 8, 10]):
+        kphidots = -gain * (5.0 - speeds)
+        kphidots[50:] = 0.0
+        ax = model_bas_rider_control.plot_eigenvalue_parts(
+            ax=ax,
+            v=speeds,
+            kphidot=kphidots,
+            colors=[
+                colors_measured[i],
+                colors_measured[i],
+                colors_measured[i],
+                colors_measured[i],
+            ],
+        )
+    fig.set_size_inches(8, 6)
+    legend_elements = [
+        Line2D([0], [0], color=colors_theoretical[-1], lw=4, label="Without controller")
+    ]
+    gains = ["-6", "-8", "-10"]
+    for i, colors in enumerate(zip(colors_theoretical, colors_measured)):
+        legend_elements.append(
+            Line2D(
+                [0],
+                [0],
+                color=colors[1],
+                lw=4,
+                label="Gain " + gains[i],
+            )
+        )
+    plt.legend(handles=legend_elements)
+    # fig.show()
+    ax.grid()
+    ax.set_xlabel("velocity [m/s]")
+    fig.suptitle(
+        "Theoretical eigenvalues of balance-assist bicycle with rigid rider",
+        wrap=True,
+    )
+    plt.savefig("figures/theoretical-bas-with-control-with-rider", dpi=300)
+    # fig.waitforbuttonpress()
 
 
 def plot_measured_eigenvalues(
@@ -168,7 +297,7 @@ def fit_curve(gain: int, prefix: str, show_plots: bool = False):
                 ax.set_title("Measured roll rate data and fitted equation")
                 ax.grid(True)
                 ax.legend()
-                fig.show()
+                # fig.show()
                 fig.waitforbuttonpress()
 
         avg_eigenvalues_real.append(sum(eigenvalues_real) / np.size(eigenvalues_real))
@@ -176,44 +305,9 @@ def fit_curve(gain: int, prefix: str, show_plots: bool = False):
 
     return avg_eigenvalues_real, avg_eigenvalues_img, r_squared
 
-    # plot_theoretical_eigenvalues(gain)
-
-    # print(f"Real: {avg_eigenvalues_real}")
-    # print(f"Imaginary: {avg_eigenvalues_img}")
-
-    # velocities_ms = [vel / 3.6 for vel in velocities]
-    # plt.plot(
-    #     velocities_ms, avg_eigenvalues_real, '.', label="Measured real eigenvalues", color='k'
-    # )
-    # plt.plot(
-    #     velocities_ms, avg_eigenvalues_img, '.', label='Measured imaginary eigenvalues', color='c'
-    # )
-    # # plt.legend()
-    # # plt.savefig("figures/gain-" + str(gain) + "-batavus-without-rider", dpi=300)
-    # plt.waitforbuttonpress()
-
 
 def kooijman_func(t, c1, d, c2, omega, c3):
     return c1 + np.exp(d * t) * (c2 * np.cos(omega * t) + c3 * np.sin(omega * t))
-
-
-def plot_theoretical_eigenvalues(gain: int):
-    parameter_set = Meijaard2007ParameterSet(balance_assist_without_rider, True)
-    model = SteerControlModel(parameter_set)
-
-    fig, ax = plt.subplots()
-    speeds = np.linspace(0.0, 10.0, num=101)
-    kphidots = -gain * (5.0 - speeds)
-    kphidots[50:] = 0.0
-    ax = model.plot_eigenvalue_parts(
-        ax=ax, v=speeds, kphidot=kphidots, colors=["k", "k", "k", "k"]
-    )
-    fig.suptitle(
-        "Theoretical eigenvalues of Batavus Browser versus measured eigenvalues at gain of -"
-        + str(gain),
-        wrap=True,
-    )
-    fig.show()
 
 
 if __name__ == "__main__":
