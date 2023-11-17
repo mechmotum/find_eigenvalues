@@ -9,14 +9,15 @@ from bicycleparameters.parameter_sets import Meijaard2007ParameterSet
 from data import (
     balance_assist_without_rider,
     benchmark,
-    balance_assist_without_rider,
     balance_assist_with_rider,
+    rigid_bike_without_rider,
+    rigid_bike_with_rider,
 )
 from model import SteerControlModel, Meijaard2007Model
 
 
 def main():
-    parameter_set_bas = Meijaard2007ParameterSet(balance_assist_without_rider, False)
+    parameter_set_bas = Meijaard2007ParameterSet(rigid_bike_without_rider, False)
     speeds = np.linspace(0.0, 6.0, num=61)
     velocities = [6, 8, 10, 12, 14, 16, 18]
     velocities_ms = [vel / 3.6 for vel in velocities]
@@ -101,7 +102,7 @@ def main():
     # fig.waitforbuttonpress()
 
     # plot theoretical balance-assist with rider without controller
-    parameter_set_bas_rider = Meijaard2007ParameterSet(balance_assist_with_rider, True)
+    parameter_set_bas_rider = Meijaard2007ParameterSet(rigid_bike_with_rider, True)
     model_bas_rider = Meijaard2007Model(parameter_set_bas_rider)
     fig, ax = plt.subplots()
     ax = model_bas_rider.plot_eigenvalue_parts(
@@ -125,14 +126,14 @@ def main():
     # # fig.waitforbuttonpress()
 
     # plot balance assist with rider with controller
-    parameter_set_bas_rider = Meijaard2007ParameterSet(balance_assist_with_rider, True)
+    parameter_set_bas_rider = Meijaard2007ParameterSet(rigid_bike_with_rider, True)
     model_bas_rider_control = SteerControlModel(parameter_set_bas_rider)
     for i, gain in enumerate([6, 8, 10]):
-        kphidots = -gain * (5.0 - speeds)
-        kphidots[50:] = 0.0
+        speed, kphi, kphidots = controller(gain)
         ax = model_bas_rider_control.plot_eigenvalue_parts(
             ax=ax,
-            v=speeds,
+            v=speed,
+            kphi=kphi,
             kphidot=kphidots,
             colors=[
                 colors_measured[i],
@@ -179,11 +180,11 @@ def plot_measured_eigenvalues(
             prefix = "12-May-2023-10-39-32-bas-on-gain-" + str(gain) + "-speed-"
         real, img, r_squared = fit_curve(gain, prefix, show_plots=False)
 
-        kphidots = -gain * (5.0 - speeds)
-        kphidots[50:] = 0.0
+        speed, kphi, kphidots = controller(gain)
         ax = model.plot_eigenvalue_parts(
             ax=ax,
-            v=speeds,
+            v=speed,
+            kphi=kphi,
             kphidot=kphidots,
             colors=[
                 colors_theoretical[i],
@@ -308,6 +309,21 @@ def fit_curve(gain: int, prefix: str, show_plots: bool = False):
 
 def kooijman_func(t, c1, d, c2, omega, c3):
     return c1 + np.exp(d * t) * (c2 * np.cos(omega * t) + c3 * np.sin(omega * t))
+
+
+def controller(kv: int, kc: float = -0.7, vmin: float = 1.5, vmax: float = 4.7):
+    speeds = np.linspace(0.0, 6.0, num=61)
+    kphi = np.ones(speeds.shape)
+    kphidots = np.ones(speeds.shape)
+    for i, speed in enumerate(speeds):
+        if speed < vmin:
+            kphidots[i] = -kv * ((vmax - vmin) / vmin) * speed
+        if speed <= vmax:
+            kphidots[i] = -kv * (vmax - speed)
+        elif speed > vmax:
+            kphi[i] = kc * (speed - vmax)
+
+    return speeds, kphi, kphidots
 
 
 if __name__ == "__main__":
