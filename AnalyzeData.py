@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from matplotlib.lines import Line2D
 import numpy as np
 import scipy.optimize as spo
@@ -15,13 +16,26 @@ from data import (
 )
 from model import SteerControlModel, Meijaard2007Model
 
+TU_COLORS = {
+    "blue": (0 / 255, 166 / 255, 214 / 255),
+    "red": (224 / 255, 60 / 255, 49 / 255),
+    "orange": (237 / 255, 104 / 255, 66 / 255),
+    "yellow": (255 / 255, 184 / 255, 28 / 255),
+}
+
 
 def main():
+    plt.rc("xtick", labelsize=16)
+    plt.rc("ytick", labelsize=16)
+    font = {"size": 16}
+    plt.rc("font", **font)
+    mpl.rcParams["lines.linewidth"] = 3
+
     parameter_set_bas = Meijaard2007ParameterSet(balance_assist_without_rider, False)
     speeds = np.linspace(0.0, 6.0, num=61)
     velocities = [6, 8, 10, 12, 14, 16, 18]
     velocities_ms = [vel / 3.6 for vel in velocities]
-    colors_measured = ["cornflowerblue", "blue", "darkblue"]
+    colors_measured = [TU_COLORS["blue"], TU_COLORS["red"], TU_COLORS["yellow"]]
     colors_theoretical = ["lightgray", "gray", "black"]
 
     # plot benchmark + controller and measured
@@ -34,7 +48,7 @@ def main():
         colors_measured,
         velocities_ms,
     )
-    fig.set_size_inches(8, 6)
+    fig.set_size_inches(16, 9)
     # fig.show()
     fig.suptitle(
         "Theoretical eigenvalues of riderless benchmark bicycle with controller compared to measured eigenvalues at gain of -6, -8 and -10",
@@ -48,10 +62,10 @@ def main():
     fig = plot_measured_eigenvalues(
         speeds, model_bas_control, colors_theoretical, colors_measured, velocities_ms
     )
-    fig.set_size_inches(8, 6)
+    fig.set_size_inches(16, 9)
     # fig.show()
     fig.suptitle(
-        "Theoretical eigenvalues of riderless balance-assist bicycle with controller compared to measured eigenvalues at gain of -6, -8 and -10",
+        "Theoretical eigenvalues of riderless balance-assist bicycle with controller compared to measured eigenvalues",
         wrap=True,
     )
     plt.savefig("figures/all-gains-bas-control-no-rider", dpi=300)
@@ -91,8 +105,10 @@ def main():
             label="Imaginary",
         )
     )
-    fig.set_size_inches(8, 6)
+    fig.set_size_inches(16, 9)
     ax.set_xlabel("velocity [m/s]")
+    ax.set_ylim(-7.5, 7.5)
+    ax.set_ylabel("Magnitude of eigenvalue [1/s]")
     plt.legend(handles=legend_elements)
     # fig.show()
     fig.suptitle(
@@ -116,7 +132,7 @@ def main():
             colors_theoretical[-1],
         ],
     )
-    fig.set_size_inches(8, 6)
+    fig.set_size_inches(16, 9)
     # plt.legend(handles=legend_elements)
     # # fig.show()
     # fig.suptitle(
@@ -143,7 +159,7 @@ def main():
                 colors_measured[i],
             ],
         )
-    fig.set_size_inches(8, 6)
+    fig.set_size_inches(16, 9)
     legend_elements = [
         Line2D([0], [0], color=colors_theoretical[-1], lw=4, label="Without controller")
     ]
@@ -162,6 +178,8 @@ def main():
     # fig.show()
     ax.grid()
     ax.set_xlabel("velocity [m/s]")
+    ax.set_ylim(-7.5, 7.5)
+    ax.set_ylabel("Magnitude of eigenvalue [1/s]")
     fig.suptitle(
         "Theoretical eigenvalues of balance-assist bicycle with rigid rider",
         wrap=True,
@@ -201,6 +219,7 @@ def plot_measured_eigenvalues(
             ".",
             label="Measured real eigenvalues",
             color=colors_measured[i],
+            markersize=12,
         )
         plt.plot(
             velocities_ms,
@@ -208,6 +227,7 @@ def plot_measured_eigenvalues(
             ".",
             label="Measured imaginary eigenvalues",
             color=colors_measured[i],
+            markersize=12,
         )
         plt.legend()
         print(
@@ -236,6 +256,8 @@ def plot_measured_eigenvalues(
 
     plt.legend(handles=legend_elements)
     ax.set_xlabel("velocity [m/s]")
+    ax.set_ylabel("Magnitude of eigenvalue [1/s]")
+    ax.set_ylim(-12.5, 12.5)
     return fig
 
 
@@ -274,14 +296,32 @@ def fit_curve(gain: int, prefix: str, show_plots: bool = False):
             r_squared.append(1 - (ss_res / ss_tot))
 
             if show_plots:
-                print(popt)
                 fig, ax = plt.subplots(1, 1)
                 ax.plot(
                     df_gyro.loc[:, "time"],
                     df_gyro.loc[:, "gyro_x"],
                     ".",
                     label="Measured data",
+                    color="black",
+                    zorder=10,
                 )
+                ax.set_xlabel("Time since perturbation [s]")
+                ax.set_ylabel("Roll rate [rad/s]")
+                ax.set_title("Example of measured roll rate data")
+                ax.legend()
+
+                fig.set_size_inches(16, 9)
+                fig.savefig(
+                    "figures/roll_rate_fits/gain-"
+                    + str(gain)
+                    + "-vel-"
+                    + str(vel)
+                    + "-file-"
+                    + str(i)
+                    + "-measured.png",
+                    dpi=300,
+                )
+
                 ax.plot(
                     df_gyro.loc[:, "time"],
                     kooijman_func(
@@ -293,14 +333,24 @@ def fit_curve(gain: int, prefix: str, show_plots: bool = False):
                         popt[4],
                     ),
                     label="Fitted equation",
+                    color=TU_COLORS["blue"],
+                    zorder=5,
                 )
-                ax.set_xlabel("Time since perturbation [s]")
-                ax.set_ylabel("Roll rate [rad/s]")
-                ax.set_title("Measured roll rate data and fitted equation")
-                ax.grid(True)
+                ax.set_title("Example of measured roll rate data and fitted equation")
                 ax.legend()
-                # fig.show()
-                fig.waitforbuttonpress()
+
+                fig.set_size_inches(16, 9)
+                fig.set_dpi(300)
+                fig.savefig(
+                    "figures/roll_rate_fits/gain-"
+                    + str(gain)
+                    + "-vel-"
+                    + str(vel)
+                    + "-file-"
+                    + str(i)
+                    + "fitted.png",
+                    dpi=300,
+                )
 
         avg_eigenvalues_real.append(sum(eigenvalues_real) / np.size(eigenvalues_real))
         avg_eigenvalues_img.append(sum(eigenvalues_img) / np.size(eigenvalues_img))
