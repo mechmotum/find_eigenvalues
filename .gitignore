@@ -3,3 +3,4 @@ __pycache__
 build/
 write-up/build/
 .vscode/
+**.png
