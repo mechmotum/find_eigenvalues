@@ -35,41 +35,31 @@ def main():
     speeds = np.linspace(0.0, 6.0, num=61)
     velocities = [6, 8, 10, 12, 14, 16, 18]
     velocities_ms = [vel / 3.6 for vel in velocities]
-    colors_measured = [TU_COLORS["blue"], TU_COLORS["red"], TU_COLORS["yellow"]]
+    colors_measured = [TU_COLORS["blue"], TU_COLORS["blue"], TU_COLORS["yellow"]]
     colors_theoretical = ["lightgray", "gray", "black"]
 
     # plot benchmark + controller and measured
-    parameter_set_benchmark = Meijaard2007ParameterSet(benchmark, False)
-    model_benchmark_control = SteerControlModel(parameter_set_benchmark)
-    fig = plot_measured_eigenvalues(
-        speeds,
-        model_benchmark_control,
-        colors_theoretical,
-        colors_measured,
-        velocities_ms,
-    )
-    fig.set_size_inches(16, 9)
-    # fig.show()
-    fig.suptitle(
-        "Theoretical eigenvalues of riderless benchmark bicycle with controller compared to measured eigenvalues at gain of -6, -8 and -10",
-        wrap=True,
-    )
-    plt.savefig("figures/all-gains-benchmark-control-no-rider", dpi=300)
-    # fig.waitforbuttonpress()
+    # parameter_set_benchmark = Meijaard2007ParameterSet(benchmark, False)
+    # model_benchmark_control = SteerControlModel(parameter_set_benchmark)
+    # fig = plot_measured_eigenvalues(
+    #     speeds,
+    #     model_benchmark_control,
+    #     colors_theoretical,
+    #     colors_measured,
+    #     velocities_ms,
+    # )
+    # fig.set_size_inches(16, 9)
+    # fig.suptitle(
+    #     "Theoretical eigenvalues of riderless benchmark bicycle with controller compared to measured eigenvalues at gain of -6, -8 and -10",
+    #     wrap=True,
+    # )
+    # plt.savefig("figures/all-gains-benchmark-control-no-rider", dpi=300)
 
     # plot theoretical balance-assist with controller and measured
     model_bas_control = SteerControlModel(parameter_set_bas)
-    fig = plot_measured_eigenvalues(
+    plot_measured_eigenvalues(
         speeds, model_bas_control, colors_theoretical, colors_measured, velocities_ms
     )
-    fig.set_size_inches(16, 9)
-    # fig.show()
-    fig.suptitle(
-        "Theoretical eigenvalues of riderless balance-assist bicycle with controller compared to measured eigenvalues",
-        wrap=True,
-    )
-    plt.savefig("figures/all-gains-bas-control-no-rider", dpi=300)
-    # fig.waitforbuttonpress()
 
     # plot theoretical balance-assist without controller
     speeds10 = np.linspace(0.0, 10.0, num=101)
@@ -128,11 +118,14 @@ def main():
         colors=[
             colors_theoretical[-1],
             colors_theoretical[-1],
-            colors_theoretical[-1],
-            colors_theoretical[-1],
+            "blue",
+            "blue",
         ],
     )
     fig.set_size_inches(16, 9)
+    for line in ax.get_lines():
+        if line.get_color() == "blue":
+            line.remove()
     # plt.legend(handles=legend_elements)
     # # fig.show()
     # fig.suptitle(
@@ -145,7 +138,7 @@ def main():
     # plot balance assist with rider with controller
     parameter_set_bas_rider = Meijaard2007ParameterSet(balance_assist_with_rider, True)
     model_bas_rider_control = SteerControlModel(parameter_set_bas_rider)
-    for i, gain in enumerate([6, 8, 10]):
+    for i, gain in enumerate([8]):
         speed, kphi, kphidots = controller(speeds, gain)
         ax = model_bas_rider_control.plot_eigenvalue_parts(
             ax=ax,
@@ -155,33 +148,63 @@ def main():
             colors=[
                 colors_measured[i],
                 colors_measured[i],
-                colors_measured[i],
-                colors_measured[i],
+                "blue",
+                "blue",
             ],
         )
+        for line in ax.get_lines():
+            if line.get_color() == "blue":
+                line.remove()
+
+    ax.plot(speeds, np.zeros(speeds.shape), color="black", linewidth=1.5, zorder=0)
+
     fig.set_size_inches(16, 9)
     legend_elements = [
-        Line2D([0], [0], color=colors_theoretical[-1], lw=4, label="Without controller")
+        Line2D(
+            [0],
+            [0],
+            color=colors_theoretical[-1],
+            lw=4,
+            label="Real eigenvalues, without controller",
+        ),
+        Line2D(
+            [0],
+            [0],
+            color=colors_theoretical[-1],
+            lw=4,
+            linestyle="--",
+            label="Imaginary eigenvalues, without controller",
+        ),
     ]
     gains = ["-6", "-8", "-10"]
-    for i, colors in enumerate(zip(colors_theoretical, colors_measured)):
-        legend_elements.append(
-            Line2D(
-                [0],
-                [0],
-                color=colors[1],
-                lw=4,
-                label="Gain " + gains[i],
-            )
+    legend_elements.append(
+        Line2D(
+            [0],
+            [0],
+            color=colors_measured[0],
+            lw=4,
+            label="Real eigenvalues, with controller",
         )
+    )
+    legend_elements.append(
+        Line2D(
+            [0],
+            [0],
+            color=colors_measured[0],
+            lw=4,
+            linestyle="--",
+            label="Imaginary eigenvalues, with controller",
+        )
+    )
     plt.legend(handles=legend_elements)
+
     # fig.show()
     ax.grid()
-    ax.set_xlabel("velocity [m/s]")
+    ax.set_xlabel("Speed [m/s]")
     ax.set_ylim(-7.5, 7.5)
     ax.set_ylabel("Magnitude of eigenvalue [1/s]")
-    fig.suptitle(
-        "Theoretical eigenvalues of balance-assist bicycle with rigid rider",
+    ax.set_title(
+        "Weave mode of the balance-assist bicycle model with rigid rider, with and without controller",
         wrap=True,
     )
     plt.savefig("figures/theoretical-bas-with-control-with-rider", dpi=300)
@@ -191,14 +214,25 @@ def main():
 def plot_measured_eigenvalues(
     speeds, model, colors_theoretical, colors_measured, velocities_ms
 ):
-    fig, ax = plt.subplots()
+    legend_elements = []
+    gains = ["-6", "-8", "-10"]
+    marker_shapes = ["o", "^", "s"]
+
     for i, gain in enumerate([6, 8, 10]):
         if gain == 6:
             prefix = "12-May-2023-10-11-04-bas-on-gain-6-speed-"
         else:
             prefix = "12-May-2023-10-39-32-bas-on-gain-" + str(gain) + "-speed-"
         real, img, r_squared = fit_curve(gain, prefix, show_plots=False)
-
+        fig, ax = plt.subplots()
+        ax.set_xlabel("velocity [m/s]")
+        ax.set_ylabel("Magnitude of eigenvalue [1/s]")
+        ax.set_ylim(-12.5, 12.5)
+        fig.set_size_inches(16, 9)
+        ax.set_title(
+            "Theoretical eigenvalues of riderless balance-assist bicycle with controller compared to measured eigenvalues",
+            wrap=True,
+        )
         speed, kphi, kphidots = controller(speeds, gain)
         ax = model.plot_eigenvalue_parts(
             ax=ax,
@@ -206,59 +240,136 @@ def plot_measured_eigenvalues(
             kphi=kphi,
             kphidot=kphidots,
             colors=[
-                colors_theoretical[i],
-                colors_theoretical[i],
-                colors_theoretical[i],
-                colors_theoretical[i],
+                "black",
+                "black",
+                "black",
+                "black",
             ],
         )
-        print(real)
+        for line in ax.get_lines():
+            if line.get_linestyle() == "--":
+                line.remove()
+
+        legend_elements = []
+        legend_elements.append(
+            Line2D(
+                [0],
+                [0],
+                color="black",
+                lw=4,
+                label="Real eigenvalues of the model",
+            )
+        )
+        ax.legend(handles=legend_elements, loc="lower left")
+
+        plt.savefig("figures/eigenvalues-model-real-" + str(gain) + ".png", dpi=300)
+
         plt.plot(
             velocities_ms,
             real,
-            ".",
+            marker_shapes[i],
             label="Measured real eigenvalues",
             color=colors_measured[i],
             markersize=12,
         )
+
+        legend_elements.append(
+            Line2D(
+                [0],
+                [0],
+                marker=marker_shapes[i],
+                markerfacecolor=colors_measured[i],
+                color="w",
+                markersize=15,
+                label="Measured real eigenvalues",
+            )
+        )
+        ax.legend(handles=legend_elements, loc="lower left")
+
+        plt.savefig(
+            "figures/eigenvalues-model-and-measured-real-" + str(gain) + ".png", dpi=300
+        )
+
+        for line in ax.get_lines():
+            line.remove()
+
+        ax = model.plot_eigenvalue_parts(
+            ax=ax,
+            v=speed,
+            kphi=kphi,
+            kphidot=kphidots,
+            colors=[
+                "black",
+                "black",
+                "black",
+                "black",
+            ],
+        )
+        ax.grid()
+
+        plt.plot(
+            velocities_ms,
+            real,
+            marker_shapes[i],
+            label="Measured real eigenvalues",
+            color=colors_measured[i],
+            markersize=12,
+        )
+
+        legend_elements.append(
+            Line2D(
+                [0],
+                [0],
+                color="black",
+                lw=4,
+                linestyle="--",
+                label="Imaginary eigenvalues of the model",
+            )
+        )
+        ax.legend(handles=legend_elements, loc="lower left")
+
+        plt.savefig(
+            "figures/eigenvalues-model-and-measured-real-and-imaginary"
+            + str(gain)
+            + ".png",
+            dpi=300,
+        )
+
         plt.plot(
             velocities_ms,
             img,
-            ".",
+            marker_shapes[0],
             label="Measured imaginary eigenvalues",
             color=colors_measured[i],
             markersize=12,
         )
-        plt.legend()
+
+        legend_elements.append(
+            Line2D(
+                [0],
+                [0],
+                marker=marker_shapes[0],
+                markerfacecolor=colors_measured[i],
+                color="w",
+                markersize=15,
+                label="Measured imaginary eigenvalues",
+            )
+        )
+
+        ax.legend(handles=legend_elements, loc="lower left")
+        # for line in ax.get_lines():
+        # if line.get_linestyle() == "--":
+        #     line.remove()
+        # if line.get_color() == "black":
+        #     line.remove()
+        ax.set_xlabel("Speed [m/s]")
         print(
             f"R-squared values for gain {gain}: Mean: {np.mean(r_squared)}, Max: {np.max(r_squared)}, Min: {np.min(r_squared)}"
         )
 
-    legend_elements = []
-    gains = ["-6", "-8", "-10"]
-    for i, colors in enumerate(zip(colors_theoretical, colors_measured)):
-        legend_elements.append(
-            Line2D(
-                [0], [0], color=colors[0], lw=4, label="Theoretical, gain " + gains[i]
-            )
-        ),
-        legend_elements.append(
-            Line2D(
-                [0],
-                [0],
-                marker="o",
-                markerfacecolor=colors[1],
-                color="w",
-                lw=4,
-                label="Measured, gain " + gains[i],
-            )
+        plt.savefig(
+            "figures/all-gains-bas-control-no-rider-gain-" + str(gain) + ".png", dpi=300
         )
-
-    plt.legend(handles=legend_elements)
-    ax.set_xlabel("velocity [m/s]")
-    ax.set_ylabel("Magnitude of eigenvalue [1/s]")
-    ax.set_ylim(-12.5, 12.5)
-    return fig
 
 
 def fit_curve(gain: int, prefix: str, show_plots: bool = False):
